@@ -1,0 +1,41 @@
+# Core dependencies
+numpy>=1.21.0
+opencv-python>=4.5.0
+Pillow>=8.3.0
+pygame>=2.1.0
+RPi.GPIO>=0.7.0  # For Raspberry Pi GPIO control
+gpiozero>=1.6.0  # Simplified GPIO library
+
+# Audio processing
+pyaudio>=0.2.11
+wave>=0.0.2
+pydub>=0.25.0
+
+# Speech and AI
+openai-whisper>=20231117
+pyttsx3>=2.90
+vosk>=0.3.45
+porcupine>=2.2.0  # Wake word detection
+
+# Computer Vision and AI
+torch>=1.12.0
+torchvision>=0.13.0
+transformers>=4.21.0
+diffusers>=0.21.0
+
+# Web and networking
+flask>=2.3.0
+websockets>=10.4
+requests>=2.28.0
+
+# Database and logging
+sqlite3  # Built-in Python module
+pandas>=1.5.0
+
+# Hardware control
+xbox360controller>=1.1.0
+inputs>=0.5
+
+# Optional advanced features
+ollama>=0.1.0  # For local LLaMA
+openai>=1.0.0  # For ChatGPT fallback

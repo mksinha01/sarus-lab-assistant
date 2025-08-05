@@ -1,0 +1,90 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+.env
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Configuration (keep examples, ignore actual config)
+src/config/hardware_config.py
+.env.local
+.env.production
+
+# Hardware specific
+*.wav
+*.mp3
+*.jpg
+*.png
+test_recordings/
+captured_images/
+
+# AI Models (large files)
+models/
+*.pt
+*.pth
+*.onnx
+*.tflite
+
+# Temporary files
+temp/
+tmp/
+*.backup
+*.bak
+
+# API Keys and Secrets
+.env
+secrets.json
+api_keys.txt
+
+# Mission logs (optional - you might want to keep some)
+mission_logs/*.json
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Documentation builds
+docs/_build/
+site/
