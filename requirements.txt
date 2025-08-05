@@ -29,7 +29,7 @@ websockets>=10.4
 requests>=2.28.0
 
 # Database and logging
-sqlite3  # Built-in Python module
+# sqlite3  # Built-in Python module (no need to install via pip)
 pandas>=1.5.0
 
 # Hardware control

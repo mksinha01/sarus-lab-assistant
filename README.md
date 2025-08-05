@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Sarus - Autonomous AI-Powered Lab Assistant Robot
 
 🔬 **Sarus** is an intelligent robotic lab assistant powered by multiple AI models, including an offline LLaMA-based LLM, real-time speech-to-text and text-to-speech systems, and a computer vision model. Built on a Raspberry Pi 4, Sarus is designed to help in lab environments by interacting through voice, exploring autonomously, navigating based on object recognition, and logging its journey.
@@ -180,3 +181,7 @@ Contributions welcome! Please read CONTRIBUTING.md for guidelines.
 ---
 
 *Sarus - Making labs smarter, one conversation at a time* 🤖✨
+=======
+# nx-project
+
+>>>>>>> b9378e5cec5d087db29f4bb8f7219511cd07a5da
