@@ -9,7 +9,7 @@ This module initializes and coordinates all subsystems including:
 - Navigation and exploration
 - Logging and reporting
 """
-
+import numpy as np
 import asyncio
 import logging
 import signal
