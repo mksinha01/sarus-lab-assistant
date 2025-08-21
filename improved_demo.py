@@ -81,10 +81,11 @@ def print_improved_menu():
     print("6. 🎭 Auto Demo      - Automated navigation with current robot")
     print("7. 🎮 Interactive    - Manual control with WASD keys")
     print("8. 🧪 Component Test - Test robot systems individually")
+    print("9. 🗣️ Voice Chat     - Talk with robot agent using voice")
     print()
     print("🔧 SYSTEM OPTIONS:")
-    print("9. 📦 Install Deps   - Install/update simulation dependencies")
-    print("10. ❌ Exit")
+    print("10. 📦 Install Deps  - Install/update simulation dependencies")
+    print("11. ❌ Exit")
     print()
 
 def create_robot_selection_demo():
@@ -326,15 +327,94 @@ def run_enhanced_auto_demo(robot_type='car'):
     except Exception as e:
         print(f"❌ Error in auto demo: {e}")
 
+def voice_chat_demo():
+    """Interactive voice conversation with robot agent"""
+    print("\n🗣️ VOICE CONVERSATION WITH ROBOT AGENT")
+    print("="*50)
+    
+    try:
+        from src.ai.voice_agent import VoiceAgent
+        
+        print("🎙️ Initializing voice conversation system...")
+        voice_agent = VoiceAgent()
+        
+        if not voice_agent.initialize():
+            print("❌ Failed to initialize voice system.")
+            print("   Make sure you have installed voice dependencies:")
+            print("   pip install speechrecognition pyttsx3 pyaudio")
+            input("Press Enter to continue...")
+            return
+        
+        print("✅ Voice system ready!")
+        print("\n🤖 VOICE CONVERSATION COMMANDS:")
+        print("   - Say 'hello' to greet the robot")
+        print("   - Ask 'what can you do?' to learn capabilities") 
+        print("   - Say 'move forward' to control robot movement")
+        print("   - Ask 'explain your sensors' to learn about robot")
+        print("   - Say 'goodbye' or 'exit' to end conversation")
+        print("\n🎙️ Starting voice conversation...")
+        print("   Speak clearly into your microphone!")
+        
+        # Start conversation loop
+        conversation_active = True
+        while conversation_active:
+            try:
+                print("\n🎤 Listening... (say something or 'exit' to quit)")
+                
+                # Listen for voice input
+                user_input = voice_agent.listen_for_speech()
+                
+                if user_input:
+                    print(f"You said: {user_input}")
+                    
+                    # Check for exit commands
+                    if any(word in user_input.lower() for word in ['exit', 'goodbye', 'quit', 'stop']):
+                        voice_agent.speak_response("Goodbye! It was nice talking with you.")
+                        conversation_active = False
+                        break
+                    
+                    # Process the voice command
+                    response = voice_agent.process_voice_command(user_input)
+                    print(f"🤖 Robot: {response}")
+                    
+                    # Speak the response
+                    voice_agent.speak_response(response)
+                
+                else:
+                    print("❌ Could not understand speech. Please try again.")
+                    voice_agent.speak_response("Sorry, I didn't understand that. Please try again.")
+            
+            except KeyboardInterrupt:
+                print("\n\n👋 Voice conversation ended.")
+                voice_agent.speak_response("Voice conversation ended. Goodbye!")
+                conversation_active = False
+            except Exception as e:
+                print(f"❌ Error during voice conversation: {e}")
+                voice_agent.speak_response("Sorry, I encountered an error.")
+    
+    except ImportError as e:
+        print(f"❌ Voice system not available: {e}")
+        print("\n📦 TO ENABLE VOICE CONVERSATION:")
+        print("   Run these commands in terminal:")
+        print("   pip install speechrecognition")
+        print("   pip install pyttsx3") 
+        print("   pip install pyaudio")
+        print("\n   Then restart the demo to use voice features!")
+        
+    except Exception as e:
+        print(f"❌ Error during voice chat: {e}")
+        
+    input("\nPress Enter to continue...")
+
 def main():
-    """Main demo function with step-by-step improvements"""
+    """Main demo function with step-by-step improvements and voice capabilities"""
     
     while True:
         print_improved_header()
         print_improved_menu()
         
         try:
-            choice = input("Enter your choice (1-10): ").strip()
+            choice = input("Enter your choice (1-11): ").strip()
             
             if choice == '1':
                 # Car robot demo
@@ -378,17 +458,21 @@ def main():
                 input("Press Enter to continue...")
             
             elif choice == '9':
+                # Voice chat
+                voice_chat_demo()
+            
+            elif choice == '10':
                 # Install dependencies
                 install_simulation_dependencies()
                 input("\\nPress Enter to continue...")
             
-            elif choice == '10':
+            elif choice == '11':
                 print("\\n👋 Thank you for using Sarus Robot Demo!")
                 print("   Perfect for college presentations!")
                 break
             
             else:
-                print("\\n❌ Invalid choice. Please select 1-10.")
+                print("\\n❌ Invalid choice. Please select 1-11.")
                 input("Press Enter to continue...")
         
         except KeyboardInterrupt:
