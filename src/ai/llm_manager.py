@@ -31,6 +31,7 @@ try:
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
+    genai = None
 
 from ..config.settings import SYSTEM_CONFIG, AI_PROMPTS
 from ..utils.logger import get_logger, PerformanceLogger
@@ -96,7 +97,10 @@ class LLMManager:
         """Initialize OpenAI client"""
         if OPENAI_AVAILABLE and self.openai_api_key:
             try:
-                self.openai_client = openai.AsyncOpenAI(api_key=self.openai_api_key)
+                self.openai_client = openai.AsyncOpenAI(
+                    api_key=self.openai_api_key,
+                    timeout=self.timeout
+                )
                 self.logger.info("✅ OpenAI client initialized")
             except Exception as e:
                 self.logger.warning(f"Failed to initialize OpenAI client: {e}")
@@ -105,7 +109,7 @@ class LLMManager:
     
     async def _initialize_gemini(self):
         """Initialize Google Gemini client"""
-        if GEMINI_AVAILABLE and self.gemini_api_key:
+        if GEMINI_AVAILABLE and self.gemini_api_key and genai:
             try:
                 genai.configure(api_key=self.gemini_api_key)
                 self.gemini_client = genai.GenerativeModel(self.cloud_model)

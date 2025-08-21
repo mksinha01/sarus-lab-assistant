@@ -26,8 +26,9 @@ except ImportError:
 try:
     import whisper
     WHISPER_AVAILABLE = True
-except ImportError:
+except (ImportError, TypeError, OSError):
     WHISPER_AVAILABLE = False
+    whisper = None
 
 try:
     import vosk
@@ -111,7 +112,7 @@ class SpeechManager:
         """Initialize speech-to-text engines"""
         stt_engine = SYSTEM_CONFIG.get('stt_engine', 'whisper')
         
-        if stt_engine == 'whisper' and WHISPER_AVAILABLE:
+        if stt_engine == 'whisper' and WHISPER_AVAILABLE and whisper:
             with PerformanceLogger("Loading Whisper model"):
                 model_size = SYSTEM_CONFIG.get('stt_model', 'base')
                 self.whisper_model = whisper.load_model(model_size)
@@ -330,8 +331,11 @@ class SpeechManager:
             audio_np = np.frombuffer(audio_data, dtype=np.int16).astype(np.float32) / 32768.0
             
             # Transcribe with Whisper
-            result = self.whisper_model.transcribe(audio_np)
-            text = result.get('text', '').strip()
+            if self.whisper_model:
+                result = self.whisper_model.transcribe(audio_np)
+                text = result.get('text', '').strip()
+            else:
+                text = ""
             
             if text:
                 self.logger.info(f"🎤 Transcribed: '{text}'")
