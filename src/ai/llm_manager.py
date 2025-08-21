@@ -9,9 +9,14 @@ and command processing.
 import asyncio
 import json
 import logging
+import os
 import time
 from typing import Dict, Any, Optional, List
 import httpx
+
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
 
 # OpenAI client
 try:
@@ -19,6 +24,13 @@ try:
     OPENAI_AVAILABLE = True
 except ImportError:
     OPENAI_AVAILABLE = False
+
+# Google Gemini client
+try:
+    import google.generativeai as genai
+    GEMINI_AVAILABLE = True
+except ImportError:
+    GEMINI_AVAILABLE = False
 
 from ..config.settings import SYSTEM_CONFIG, AI_PROMPTS
 from ..utils.logger import get_logger, PerformanceLogger
@@ -32,16 +44,22 @@ class LLMManager:
         self.logger = get_logger(__name__)
         
         # Configuration
-        self.primary_backend = SYSTEM_CONFIG.get('llm_primary', 'ollama')
-        self.fallback_backend = SYSTEM_CONFIG.get('llm_fallback', 'openai')
+        self.primary_backend = SYSTEM_CONFIG.get('llm_primary', 'gemini')
+        self.fallback_backend = SYSTEM_CONFIG.get('llm_fallback', 'ollama')
         self.local_model = SYSTEM_CONFIG.get('llm_model_local', 'llama3.2:3b')
-        self.cloud_model = SYSTEM_CONFIG.get('llm_model_cloud', 'gpt-4o-mini')
+        self.cloud_model = SYSTEM_CONFIG.get('llm_model_cloud', 'gemini-1.5-flash')
+        self.openai_model = SYSTEM_CONFIG.get('llm_model_openai', 'gpt-4o-mini')
         self.max_tokens = SYSTEM_CONFIG.get('llm_max_tokens', 500)
         self.temperature = SYSTEM_CONFIG.get('llm_temperature', 0.7)
         self.timeout = SYSTEM_CONFIG.get('llm_timeout', 30.0)
         
+        # API Keys
+        self.openai_api_key = os.getenv('OPENAI_API_KEY')
+        self.gemini_api_key = os.getenv('GEMINI_API_KEY')
+        
         # Clients
         self.openai_client = None
+        self.gemini_client = None
         self.ollama_available = False
         
         # Conversation history
@@ -59,6 +77,9 @@ class LLMManager:
             # Initialize OpenAI client
             await self._initialize_openai()
             
+            # Initialize Gemini client
+            await self._initialize_gemini()
+            
             # Check Ollama availability
             await self._check_ollama()
             
@@ -73,15 +94,20 @@ class LLMManager:
     
     async def _initialize_openai(self):
         """Initialize OpenAI client"""
-        if OPENAI_AVAILABLE:
-            api_key = SYSTEM_CONFIG.get('openai_api_key')
-            if api_key:
-                self.openai_client = openai.AsyncOpenAI(api_key=api_key)
-                self.logger.info("✅ OpenAI client initialized")
-            else:
-                self.logger.warning("OpenAI API key not provided")
+        if OPENAI_AVAILABLE and self.openai_api_key:
+            self.openai_client = openai.AsyncOpenAI(api_key=self.openai_api_key)
+            self.logger.info("✅ OpenAI client initialized")
         else:
-            self.logger.warning("OpenAI library not available")
+            self.logger.warning("OpenAI not available or API key missing")
+    
+    async def _initialize_gemini(self):
+        """Initialize Google Gemini client"""
+        if GEMINI_AVAILABLE and self.gemini_api_key:
+            genai.configure(api_key=self.gemini_api_key)
+            self.gemini_client = genai.GenerativeModel(self.cloud_model)
+            self.logger.info(f"✅ Gemini client initialized with model: {self.cloud_model}")
+        else:
+            self.logger.warning("Gemini not available or API key missing")
     
     async def _check_ollama(self):
         """Check if Ollama service is available"""
@@ -139,7 +165,9 @@ class LLMManager:
             
             # Try primary backend first
             response = None
-            if self.primary_backend == 'ollama' and self.ollama_available:
+            if self.primary_backend == 'gemini' and self.gemini_client:
+                response = await self._query_gemini(enhanced_prompt)
+            elif self.primary_backend == 'ollama' and self.ollama_available:
                 response = await self._query_ollama(enhanced_prompt)
             elif self.primary_backend == 'openai' and self.openai_client:
                 response = await self._query_openai(enhanced_prompt)
@@ -148,7 +176,9 @@ class LLMManager:
             if not response:
                 self.logger.warning(f"Primary backend ({self.primary_backend}) failed, trying fallback")
                 
-                if self.fallback_backend == 'openai' and self.openai_client:
+                if self.fallback_backend == 'gemini' and self.gemini_client:
+                    response = await self._query_gemini(enhanced_prompt)
+                elif self.fallback_backend == 'openai' and self.openai_client:
                     response = await self._query_openai(enhanced_prompt)
                 elif self.fallback_backend == 'ollama' and self.ollama_available:
                     response = await self._query_ollama(enhanced_prompt)
@@ -249,6 +279,34 @@ class LLMManager:
                     
         except Exception as e:
             self.logger.error(f"OpenAI query failed: {e}")
+        
+        return None
+    
+    async def _query_gemini(self, prompt: str) -> Optional[str]:
+        """Query Google Gemini API"""
+        if not self.gemini_client:
+            return None
+        
+        try:
+            with PerformanceLogger("Gemini query"):
+                # Build conversation context
+                conversation_text = "\n".join([
+                    f"{msg['role']}: {msg['content']}" 
+                    for msg in self.conversation_history[-4:]  # Last 4 messages for context
+                ])
+                
+                full_prompt = f"{conversation_text}\nuser: {prompt}"
+                
+                response = await asyncio.to_thread(
+                    self.gemini_client.generate_content,
+                    full_prompt
+                )
+                
+                if response.text:
+                    return response.text.strip()
+                    
+        except Exception as e:
+            self.logger.error(f"Gemini query failed: {e}")
         
         return None
     

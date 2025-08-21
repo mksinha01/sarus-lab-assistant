@@ -51,10 +51,11 @@ SYSTEM_CONFIG = {
     "tts_voice_id": 0,  # System voice ID
     
     # LLM settings
-    "llm_primary": "ollama",  # "ollama", "openai"
-    "llm_fallback": "openai",
+    "llm_primary": "gemini",  # "gemini", "ollama", "openai"
+    "llm_fallback": "ollama",
     "llm_model_local": "llama3.2:3b",  # Ollama model
-    "llm_model_cloud": "gpt-4o-mini",  # OpenAI model
+    "llm_model_cloud": "gemini-1.5-flash",  # Gemini model
+    "llm_model_openai": "gpt-4o-mini",  # OpenAI model
     "llm_max_tokens": 500,
     "llm_temperature": 0.7,
     "llm_timeout": 30.0,
