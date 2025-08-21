@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-Sarus Robot - College Demonstration Launcher
-Run this to show your 3D robot simulation to professors and students!
+🚀 SARUS ROBOT - ENHANCED COLLEGE DEMONSTRATION SYSTEM 🚀
+Advanced 3D Physics Simulation with Interactive Controls
+Perfect for impressing professors and students!
 """
 import os
 import sys
 import time
+import threading
 from pathlib import Path
 
 # Add project root to Python path

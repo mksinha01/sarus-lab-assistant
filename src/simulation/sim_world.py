@@ -38,6 +38,12 @@ class SarusSimWorld:
         p.setGravity(0, 0, -9.81)
         p.setTimeStep(1/240)  # High precision simulation
         
+        # Initialize simulation state first
+        self.simulation_time = 0
+        self.objects = {}
+        self.sensors = {}
+        self.step_count = 0
+        
         # Create environment
         self.setup_environment()
         
@@ -51,11 +57,7 @@ class SarusSimWorld:
         self.right_wheel_speed = 0.0
         self.wheel_base = 0.25  # Distance between wheels
         
-        # Simulation state
-        self.simulation_time = 0
-        self.objects = {}
-        self.sensors = {}
-        self.step_count = 0
+        # Simulation state (already initialized above)
         
         print("🌍 3D Simulation World Created for College Demo!")
         print(f"   - GUI Mode: {'ON' if gui else 'OFF'}")
