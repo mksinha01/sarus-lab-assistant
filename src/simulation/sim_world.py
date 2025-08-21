@@ -85,7 +85,7 @@ class SarusSimWorld:
                 position=[pos[0], pos[1], 0.75],
                 size=[0.8, 0.6, 0.05],
                 color=[0.8, 0.6, 0.4, 1],
-                mass=0  # Static
+                mass=0.0  # Static
             )
             
             # Table legs
@@ -101,7 +101,7 @@ class SarusSimWorld:
                     position=leg_pos,
                     size=[0.05, 0.05, 0.375],
                     color=[0.6, 0.4, 0.2, 1],
-                    mass=0
+                    mass=0.0
                 )
             
             self.objects[f"table_{i}"] = table_top
@@ -137,7 +137,7 @@ class SarusSimWorld:
                 position=wall["pos"],
                 size=wall["size"],
                 color=wall["color"],
-                mass=0
+                mass=0.0
             )
             self.objects[f"wall_{len(self.objects)}"] = wall_id
         
@@ -153,11 +153,11 @@ class SarusSimWorld:
                 position=obs["pos"],
                 size=obs["size"],
                 color=obs["color"],
-                mass=1
+                mass=1.0
             )
             self.objects[f"obstacle_{i}"] = obs_id
     
-    def create_box(self, position, size, color, mass=1):
+    def create_box(self, position, size, color, mass=1.0):
         """Helper function to create boxes"""
         collision_shape = p.createCollisionShape(p.GEOM_BOX, halfExtents=size)
         visual_shape = p.createVisualShape(
