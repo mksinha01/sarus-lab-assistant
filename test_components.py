@@ -8,11 +8,16 @@ and initialized correctly. These tests don't require hardware.
 import asyncio
 import sys
 import os
+from pathlib import Path
 
-# Add src to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
-# Also add current directory to path
-sys.path.insert(0, os.path.dirname(__file__))
+# Add project root and src to path for imports
+project_root = Path(__file__).parent
+sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(project_root / 'src'))
+
+# Load environment variables
+from dotenv import load_dotenv
+load_dotenv()
 
 class ComponentTester:
     """Test runner for individual robot components."""
@@ -25,7 +30,7 @@ class ComponentTester:
         """Test sensor manager initialization."""
         print("\n🔍 Testing Sensor Manager...")
         try:
-            from hardware.sensor_manager import SensorManager
+            from src.hardware.sensor_manager import SensorManager
             
             sensor_manager = SensorManager()
             await sensor_manager.initialize()
@@ -51,7 +56,7 @@ class ComponentTester:
         """Test motor controller initialization."""
         print("\n🚗 Testing Motor Controller...")
         try:
-            from hardware.motor_controller import MotorController
+            from src.hardware.motor_controller import MotorController
             
             motor_controller = MotorController()
             await motor_controller.initialize()
@@ -76,7 +81,7 @@ class ComponentTester:
         """Test display controller initialization."""
         print("\n💡 Testing Display Controller...")
         try:
-            from hardware.display_controller import DisplayController
+            from src.hardware.display_controller import DisplayController
             
             display_controller = DisplayController()
             await display_controller.initialize()
@@ -99,7 +104,7 @@ class ComponentTester:
         """Test speech manager initialization."""
         print("\n🎤 Testing Speech Manager...")
         try:
-            from ai.speech_manager import SpeechManager
+            from src.ai.speech_manager import SpeechManager
             
             speech_manager = SpeechManager()
             await speech_manager.initialize()
@@ -122,7 +127,7 @@ class ComponentTester:
         """Test vision manager initialization."""
         print("\n👁️ Testing Vision Manager...")
         try:
-            from ai.vision_manager import VisionManager
+            from src.ai.vision_manager import VisionManager
             
             vision_manager = VisionManager()
             await vision_manager.initialize()
@@ -145,7 +150,7 @@ class ComponentTester:
         """Test LLM manager initialization."""
         print("\n🧠 Testing LLM Manager...")
         try:
-            from ai.llm_manager import LLMManager
+            from src.ai.llm_manager import LLMManager
             
             llm_manager = LLMManager()
             await llm_manager.initialize()
@@ -153,10 +158,10 @@ class ComponentTester:
             print("✅ LLM manager initialized")
             
             # Check available methods
-            if hasattr(llm_manager, 'process_query'):
-                print("✅ process_query method available")
-            if hasattr(llm_manager, 'generate_text'):
-                print("✅ generate_text method available")
+            if hasattr(llm_manager, 'process_command'):
+                print("✅ process_command method available")
+            if hasattr(llm_manager, 'generate_exploration_summary'):
+                print("✅ generate_exploration_summary method available")
             
             # Note: LLMManager may not have cleanup method
             print("✅ LLM Manager test completed")
@@ -168,10 +173,10 @@ class ComponentTester:
         """Test navigation manager initialization."""
         print("\n🧭 Testing Navigation Manager...")
         try:
-            from navigation.navigation_manager import NavigationManager
-            from hardware.sensor_manager import SensorManager
-            from hardware.motor_controller import MotorController
-            from ai.vision_manager import VisionManager
+            from src.navigation.navigation_manager import NavigationManager
+            from src.hardware.sensor_manager import SensorManager
+            from src.hardware.motor_controller import MotorController
+            from src.ai.vision_manager import VisionManager
             
             # Initialize dependencies
             sensor_manager = SensorManager()
@@ -210,7 +215,7 @@ class ComponentTester:
         """Test full robot integration."""
         print("\n🤖 Testing Full Robot Integration...")
         try:
-            from core.robot import SarusRobot
+            from src.core.robot import SarusRobot
             
             robot = SarusRobot()
             await robot.initialize()

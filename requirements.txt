@@ -41,4 +41,4 @@ ollama>=0.1.0  # For local LLaMA
 openai>=1.0.0  # For ChatGPT fallback
 google-generativeai>=0.3.0  # For Google Gemini
 python-dotenv>=1.0.0  # For environment variables
-httpx>=0.24.0  # For HTTP requests
+httpx>=0.25.0,<0.28.0  # For HTTP requests (compatible with openai)

@@ -95,17 +95,23 @@ class LLMManager:
     async def _initialize_openai(self):
         """Initialize OpenAI client"""
         if OPENAI_AVAILABLE and self.openai_api_key:
-            self.openai_client = openai.AsyncOpenAI(api_key=self.openai_api_key)
-            self.logger.info("✅ OpenAI client initialized")
+            try:
+                self.openai_client = openai.AsyncOpenAI(api_key=self.openai_api_key)
+                self.logger.info("✅ OpenAI client initialized")
+            except Exception as e:
+                self.logger.warning(f"Failed to initialize OpenAI client: {e}")
         else:
             self.logger.warning("OpenAI not available or API key missing")
     
     async def _initialize_gemini(self):
         """Initialize Google Gemini client"""
         if GEMINI_AVAILABLE and self.gemini_api_key:
-            genai.configure(api_key=self.gemini_api_key)
-            self.gemini_client = genai.GenerativeModel(self.cloud_model)
-            self.logger.info(f"✅ Gemini client initialized with model: {self.cloud_model}")
+            try:
+                genai.configure(api_key=self.gemini_api_key)
+                self.gemini_client = genai.GenerativeModel(self.cloud_model)
+                self.logger.info(f"✅ Gemini client initialized with model: {self.cloud_model}")
+            except Exception as e:
+                self.logger.warning(f"Failed to initialize Gemini client: {e}")
         else:
             self.logger.warning("Gemini not available or API key missing")
     
