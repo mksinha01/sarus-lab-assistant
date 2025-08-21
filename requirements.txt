@@ -6,6 +6,10 @@ pygame>=2.1.0
 RPi.GPIO>=0.7.0  # For Raspberry Pi GPIO control
 gpiozero>=1.6.0  # Simplified GPIO library
 
+# 3D Simulation dependencies
+pybullet>=3.2.5  # Physics simulation engine
+matplotlib>=3.5.0  # For plotting and visualization
+
 # Audio processing
 pyaudio>=0.2.11
 wave>=0.0.2
