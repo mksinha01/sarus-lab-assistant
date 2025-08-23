@@ -1,15 +1,19 @@
 """
-Motor controller for Sarus robot
+🚗 MOTOR CONTROLLER - Sarus Mobility Feature
+DC motor control and movement coordination for robot locomotion
 
 Handles DC motor control for robot movement including forward/backward
-motion, turning, and speed control using L298N motor driver.
+motion, turning, and speed control using L298N motor driver with safety features.
+Integrates with Sarus navigation and emergency stop systems.
 """
 
 import asyncio
 import logging
 import time
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Dict, Any
 from enum import Enum
+from dataclasses import dataclass
+from datetime import datetime
 
 # GPIO control libraries
 try:
@@ -24,30 +28,47 @@ try:
 except ImportError:
     GPIOZERO_AVAILABLE = False
 
-from ..config.settings import SYSTEM_CONFIG
-from ..utils.logger import get_logger
-
 class MotorDirection(Enum):
     """Motor rotation directions"""
     FORWARD = "forward"
     BACKWARD = "backward"
     STOP = "stop"
 
+@dataclass
+class MotorCommand:
+    """Motor control command"""
+    left_speed: float   # -1.0 to 1.0
+    right_speed: float  # -1.0 to 1.0
+    duration: Optional[float] = None  # seconds, None for continuous
+    timestamp: Optional[datetime] = None
+    
+    def __post_init__(self):
+        if self.timestamp is None:
+            self.timestamp = datetime.now()
+
 class MotorController:
     """
-    Controls robot movement using L298N motor driver and DC motors
+    🚗 Enhanced Motor Control System for Sarus Robot
+    
+    Features:
+    - Dual motor control (left/right wheels)
+    - Speed control and direction management
+    - Emergency stop capability
+    - Movement coordination and safety
+    - Integration with navigation system
     """
     
-    def __init__(self):
-        self.logger = get_logger(__name__)
+    def __init__(self, config=None):
+        self.logger = logging.getLogger(__name__)
+        self.config = config
         
         # Hardware configuration
-        self.hardware_enabled = SYSTEM_CONFIG.get('hardware_enabled', False)
-        self.gpio_pins = SYSTEM_CONFIG.get('gpio_pins', {})
+        self.hardware_enabled = getattr(config, 'hardware_enabled', False) if config else False
+        self.simulation_mode = getattr(config, 'simulation_mode', True) if config else True
         
         # Motor parameters
-        self.max_speed = SYSTEM_CONFIG.get('max_speed', 0.8)
-        self.turn_speed = SYSTEM_CONFIG.get('turn_speed', 0.6)
+        self.max_speed = getattr(config, 'max_speed', 0.8) if config else 0.8
+        self.turn_speed = getattr(config, 'turn_speed', 0.6) if config else 0.6
         
         # Motor control objects
         self.left_motor_forward = None

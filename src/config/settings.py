@@ -1,14 +1,107 @@
 """
-System configuration settings for Sarus robot
-
-This module contains all configurable parameters for the robot including
-hardware settings, AI model configurations, and operational parameters.
+⚙️ SARUS ROBOT CONFIGURATION SETTINGS
+Main configuration file for Sarus AI Lab Assistant Robot (Jarvis + Sarus Integration)
 """
 
 import os
 from pathlib import Path
+from dataclasses import dataclass
+from typing import Dict, Any
 
-# Project paths
+@dataclass
+class Config:
+    """Main configuration class for Sarus robot"""
+    
+    # Project paths
+    PROJECT_ROOT: Path = Path(__file__).parent.parent.parent
+    DATA_DIR: Path = PROJECT_ROOT / "data"
+    LOGS_DIR: Path = PROJECT_ROOT / "logs"
+    MODELS_DIR: Path = DATA_DIR / "models"
+    
+    # AI Model Settings
+    AI_MODEL_LOCAL: str = "llama-7b"
+    AI_MODEL_CLOUD: str = "gpt-4"
+    VOICE_WAKE_WORD: str = "hey sarus"
+    
+    # Voice System Settings
+    STT_MODEL: str = "vosk"  # vosk, whisper
+    TTS_ENGINE: str = "pyttsx3"  # pyttsx3, coqui
+    VOICE_TIMEOUT: int = 5
+    VOICE_RATE: int = 150
+    VOICE_VOLUME: float = 1.0
+    
+    # Safety Thresholds
+    MAX_TEMPERATURE: float = 35.0  # Celsius
+    MAX_HUMIDITY: float = 80.0     # Percentage
+    GAS_ALARM_THRESHOLD: int = 400  # PPM
+    
+    # Navigation Settings
+    MAX_SPEED: float = 0.5  # m/s
+    OBSTACLE_DISTANCE: float = 0.3  # meters
+    TURN_SPEED: float = 0.3
+    
+    # Hardware Pins (Raspberry Pi GPIO)
+    # Motor Control Pins
+    MOTOR_LEFT_PWM: int = 18
+    MOTOR_LEFT_DIR1: int = 24
+    MOTOR_LEFT_DIR2: int = 25
+    MOTOR_RIGHT_PWM: int = 19
+    MOTOR_RIGHT_DIR1: int = 26
+    MOTOR_RIGHT_DIR2: int = 27
+    
+    # Sensor Pins
+    DHT22_PIN: int = 4
+    GAS_SENSOR_PIN: int = 0  # ADC channel
+    ULTRASONIC_TRIG: int = 23
+    ULTRASONIC_ECHO: int = 24
+    
+    # LED Matrix Pins
+    LED_MATRIX_DIN: int = 19
+    LED_MATRIX_CS: int = 8
+    LED_MATRIX_CLK: int = 11
+    
+    # Camera Settings
+    CAMERA_WIDTH: int = 640
+    CAMERA_HEIGHT: int = 480
+    CAMERA_FPS: int = 30
+    
+    # Web Dashboard
+    WEB_HOST: str = "0.0.0.0"
+    WEB_PORT: int = 5000
+    WEB_DEBUG: bool = False
+    
+    # Logging Settings
+    LOG_LEVEL: str = "INFO"
+    LOG_FORMAT: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    
+    # Security Settings
+    FACE_RECOGNITION_TOLERANCE: float = 0.6
+    MAX_FAILED_ATTEMPTS: int = 3
+    SECURITY_LOCKOUT_TIME: int = 300  # seconds
+    
+    # Environmental Monitoring
+    SENSOR_READ_INTERVAL: float = 1.0  # seconds
+    LOG_INTERVAL: float = 60.0  # seconds
+    ALERT_COOLDOWN: float = 30.0  # seconds
+    
+    # Simulation Settings (for development/testing)
+    SIMULATION_MODE: bool = True  # Set to False for real hardware
+    PYBULLET_GUI: bool = True
+    
+    def __post_init__(self):
+        """Initialize and validate configuration"""
+        # Create necessary directories
+        self.DATA_DIR.mkdir(exist_ok=True)
+        self.LOGS_DIR.mkdir(exist_ok=True)
+        self.MODELS_DIR.mkdir(exist_ok=True)
+        
+        # Create log subdirectories
+        (self.LOGS_DIR / "mission_reports").mkdir(exist_ok=True)
+        (self.LOGS_DIR / "environmental").mkdir(exist_ok=True)
+        (self.LOGS_DIR / "security").mkdir(exist_ok=True)
+        (self.LOGS_DIR / "system").mkdir(exist_ok=True)
+
+# Legacy settings for backward compatibility
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 LOGS_DIR = PROJECT_ROOT / "logs"

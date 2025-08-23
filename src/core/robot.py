@@ -1,30 +1,42 @@
 """
-Main robot controller and coordinator
+🤖 SARUS AI LAB ASSISTANT ROBOT - CORE CONTROLLER
+Main robot controller integrating Jarvis + Sarus capabilities
 
 This module contains the SarusRobot class which orchestrates all
-subsystems including AI, hardware, navigation, and communication.
+subsystems including AI, hardware, navigation, safety, and communication.
 """
 
 import asyncio
 import logging
 import time
-from typing import Dict, Any, Optional
+import json
+from typing import Dict, Any, Optional, List
 from enum import Enum
+from datetime import datetime
+from pathlib import Path
 
-from ..ai.speech_manager import SpeechManager
-from ..ai.llm_manager import LLMManager
-from ..ai.vision_manager import VisionManager
-from ..hardware.motor_controller import MotorController
-from ..hardware.sensor_manager import SensorManager
-from ..hardware.display_controller import DisplayController
-from ..navigation.navigation_manager import NavigationManager
-from ..communication.voice_interface import VoiceInterface
-from ..utils.state_manager import StateManager
-from ..utils.mission_logger import MissionLogger
-from ..config.settings import SYSTEM_CONFIG
+# Import subsystem managers (will be implemented)
+try:
+    from ..ai.speech_manager import SpeechManager
+    from ..ai.llm_manager import LLMManager
+    from ..ai.vision_manager import VisionManager
+    from ..hardware.motor_controller import MotorController
+    from ..hardware.sensor_manager import SensorManager
+    from ..hardware.display_controller import DisplayController
+    from ..navigation.navigation_manager import NavigationManager
+    from ..safety.gas_monitor import GasMonitor
+    from ..safety.face_recognition import FaceRecognition
+    from ..safety.emergency_stop import EmergencyStop
+    from ..communication.voice_interface import VoiceInterface
+    from ..utils.state_manager import StateManager
+    from ..utils.mission_logger import MissionLogger
+    from ..config.settings import Config
+except ImportError as e:
+    # Graceful handling during development
+    logging.warning(f"Some modules not yet implemented: {e}")
 
 class RobotState(Enum):
-    """Robot operational states"""
+    """Robot operational states for Jarvis + Sarus integration"""
     INITIALIZING = "initializing"
     IDLE = "idle"
     LISTENING = "listening"
@@ -32,19 +44,37 @@ class RobotState(Enum):
     SPEAKING = "speaking"
     MOVING = "moving"
     EXPLORING = "exploring"
+    MONITORING = "monitoring"
+    ALERT = "alert"
+    EMERGENCY = "emergency"
     ERROR = "error"
     SHUTDOWN = "shutdown"
 
 class SarusRobot:
     """
-    Main robot controller that coordinates all subsystems
+    🤖 Main Sarus Robot Controller
+    
+    Integrates Jarvis safety features with Sarus mobility:
+    - Voice interaction with Gemini AI
+    - Environmental monitoring (temperature, humidity, gas)
+    - Computer vision and face recognition
+    - Autonomous navigation and movement
+    - Safety protocols and emergency response
     """
     
-    def __init__(self):
+    def __init__(self, config: Config):
         self.logger = logging.getLogger(__name__)
+        self.config = config
         self.state = RobotState.INITIALIZING
+        self.start_time = datetime.now()
         
-        # Subsystem managers
+        # System status
+        self.is_running = False
+        self.last_heartbeat = time.time()
+        self.authorized_users: List[str] = []
+        self.current_mission: Optional[str] = None
+        
+        # Subsystem managers (will be initialized)
         self.speech_manager: Optional[SpeechManager] = None
         self.llm_manager: Optional[LLMManager] = None
         self.vision_manager: Optional[VisionManager] = None
