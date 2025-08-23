@@ -26,7 +26,8 @@ project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
 # Import Sarus components
-from src.core.robot import SarusRobot
+# Use simplified robot for development/testing
+from src.core.simple_robot import SarusRobot
 from src.config.settings import Config
 from src.utils.logging import setup_logging
 
@@ -36,8 +37,9 @@ robot = None
 def signal_handler(signum, frame):
     """Handle shutdown signals gracefully"""
     print("\n🛑 Shutdown signal received. Stopping Sarus...")
-    if robot:
-        asyncio.create_task(robot.shutdown())
+    if robot and hasattr(robot, 'shutdown'):
+        # Set running flag to False to stop loops gracefully
+        robot.is_running = False
     sys.exit(0)
 
 async def main():
@@ -101,7 +103,7 @@ async def main():
         
     finally:
         # Cleanup
-        if robot:
+        if robot and hasattr(robot, 'shutdown'):
             print("🧹 Cleaning up Sarus systems...")
             await robot.shutdown()
         print("🛑 Sarus shutdown complete")

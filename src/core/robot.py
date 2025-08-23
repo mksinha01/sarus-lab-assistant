@@ -17,6 +17,7 @@ from pathlib import Path
 
 # Import subsystem managers (will be implemented)
 try:
+    from ..config.settings import Config
     from ..ai.speech_manager import SpeechManager
     from ..ai.llm_manager import LLMManager
     from ..ai.vision_manager import VisionManager
@@ -30,10 +31,10 @@ try:
     from ..communication.voice_interface import VoiceInterface
     from ..utils.state_manager import StateManager
     from ..utils.mission_logger import MissionLogger
-    from ..config.settings import Config
 except ImportError as e:
     # Graceful handling during development
     logging.warning(f"Some modules not yet implemented: {e}")
+    Config = None
 
 class RobotState(Enum):
     """Robot operational states for Jarvis + Sarus integration"""
