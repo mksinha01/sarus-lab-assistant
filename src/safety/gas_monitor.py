@@ -51,12 +51,12 @@ class GasMonitor:
         self.is_monitoring = False
         self.last_readings: Dict[str, GasReading] = {}
         self.alert_active = False
-        self.baseline_values: Dict[str, float] = {}
+    self.baseline_values: Dict[str, float] = {}
         
-        # Hardware simulation for development
-        self.simulation_mode = config.simulation_mode
+    # Hardware simulation for development (support both SIMULATION_MODE and simulation_mode)
+    self.simulation_mode = getattr(config, 'simulation_mode', getattr(config, 'SIMULATION_MODE', True))
         
-        self.logger.info("Gas Monitor initialized")
+    self.logger.info("Gas Monitor initialized")
     
     async def start_monitoring(self):
         """Start continuous gas monitoring"""

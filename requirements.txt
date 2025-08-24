@@ -14,20 +14,24 @@ datetime  # Built-in
 openai>=1.0.0
 google-generativeai>=0.3.0
 anthropic>=0.8.0
-transformers>=4.30.0
-torch>=2.0.0
-torchvision>=0.15.0
-torchaudio>=2.0.0
+transformers>=4.30.0; platform_machine != "armv7l" and platform_machine != "aarch64"
+# PyTorch stack excluded on Raspberry Pi by default (use tflite/onnxruntime instead)
+torch>=2.0.0; platform_machine != "armv7l" and platform_machine != "aarch64"
+torchvision>=0.15.0; platform_machine != "armv7l" and platform_machine != "aarch64"
+torchaudio>=2.0.0; platform_machine != "armv7l" and platform_machine != "aarch64"
 numpy>=1.24.0
 scipy>=1.10.0
-scikit-learn>=1.3.0
+scikit-learn>=1.3.0; platform_machine != "armv7l"
+onnxruntime>=1.17.3; platform_machine == "aarch64"
+tflite-runtime>=2.11.0; platform_machine == "armv7l"
 
 # Computer Vision and Object Detection
-opencv-python>=4.8.0
+# Use apt: python3-opencv on Raspberry Pi; pip wheel often unavailable on ARM
+opencv-python>=4.8.0; platform_machine != "armv7l" and platform_machine != "aarch64"
 Pillow>=10.0.0
-ultralytics>=8.0.0  # YOLOv8 for object detection
-face-recognition>=1.3.0
-dlib>=19.24.0
+ultralytics>=8.0.0; platform_machine != "armv7l" and platform_machine != "aarch64"  # YOLOv8
+face-recognition>=1.3.0; platform_machine != "armv7l" and platform_machine != "aarch64"
+dlib>=19.24.0; platform_machine != "armv7l" and platform_machine != "aarch64"
 imageio>=2.31.0
 scikit-image>=0.21.0
 
@@ -36,10 +40,10 @@ speechrecognition>=3.10.0
 pyttsx3>=2.90
 pyaudio>=0.2.11
 vosk>=0.3.45
-openai-whisper>=20231117
+openai-whisper>=20231117; platform_machine != "armv7l" and platform_machine != "aarch64"
 soundfile>=0.12.0
-librosa>=0.10.0
-porcupine>=2.2.0  # Wake word detection
+librosa>=0.10.0; platform_machine != "armv7l"
+pvporcupine>=3.0.2  # Wake word detection (Picovoice)
 pydub>=0.25.0
 
 # Web Framework and Dashboard
@@ -54,7 +58,7 @@ RPi.GPIO>=0.7.1; platform_machine == "armv7l"
 gpiozero>=1.6.2; platform_machine == "armv7l"
 adafruit-circuitpython-dht>=3.7.0; platform_machine == "armv7l"
 adafruit-circuitpython-mcp3xxx>=1.4.0; platform_machine == "armv7l"
-picamera2>=0.3.0; platform_machine == "armv7l"
+# Picamera2 should be installed via apt (python3-picamera2)
 
 # Simulation and Physics Engine
 pybullet>=3.2.5
