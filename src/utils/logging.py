@@ -86,9 +86,10 @@ def setup_logging(
     
     # System log for startup/shutdown
     startup_logger = logging.getLogger("sarus.startup")
-    startup_logger.info("🚀 Sarus logging system initialized")
-    startup_logger.info(f"📁 Log directory: {log_dir}")
-    startup_logger.info(f"📊 Log level: {log_level}")
+    # Avoid non-ASCII characters to prevent console encoding issues on Windows
+    startup_logger.info("Sarus logging system initialized")
+    startup_logger.info(f"Log directory: {log_dir}")
+    startup_logger.info(f"Log level: {log_level}")
     
     return root_logger
 
@@ -204,7 +205,8 @@ class SarusLoggerAdapter(logging.LoggerAdapter):
     
     def process(self, msg, kwargs):
         """Add robot context to log messages"""
-        robot_id = self.extra.get('robot_id', 'sarus')
+        extra = self.extra or {}
+        robot_id = extra.get('robot_id', 'sarus')
         return f"[{robot_id}] {msg}", kwargs
 
 def log_system_event(event_type: str, message: str, level: str = "INFO"):

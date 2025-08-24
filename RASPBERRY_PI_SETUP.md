@@ -32,6 +32,9 @@ chmod +x setup_raspberry_pi.sh
 
 # Run the complete setup (this will take 15-30 minutes)
 ./setup_raspberry_pi.sh
+
+# If using PowerShell on Pi (pwsh):
+powershell -ExecutionPolicy Bypass -File scripts/raspberry_pi/setup_raspberry_pi.ps1
 ```
 
 ## 🔧 Manual Setup Instructions
@@ -196,6 +199,9 @@ sudo systemctl start sarus-robot.service
 
 # Check status
 sudo systemctl status sarus-robot.service
+
+# Optionally, copy the pre-made unit from scripts:
+# sudo cp scripts/raspberry_pi/sarus-robot.service /etc/systemd/system/sarus-robot.service
 ```
 
 ## 📊 Performance Optimization

@@ -1,0 +1,15 @@
+[Unit]
+Description=Sarus Lab Assistant Robot
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/sarus-lab-assistant
+Environment=PATH=/home/pi/sarus-lab-assistant/.venv/bin
+ExecStart=/home/pi/sarus-lab-assistant/.venv/bin/python main.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

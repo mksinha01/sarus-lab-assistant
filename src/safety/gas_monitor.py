@@ -38,25 +38,25 @@ class GasMonitor:
         self.logger = logging.getLogger(__name__)
         self.config = config
         self.alert_callback = alert_callback
-        
+
         # Gas sensor thresholds (PPM)
-        self.thresholds = {
+        self.thresholds: Dict[str, float] = {
             'mq2': 300,  # Smoke/combustible gases
             'mq5': 200,  # Natural gas
             'mq7': 50,   # Carbon monoxide
             'general': 400  # General gas threshold
         }
-        
+
         # Monitoring state
-        self.is_monitoring = False
+        self.is_monitoring: bool = False
         self.last_readings: Dict[str, GasReading] = {}
-        self.alert_active = False
-    self.baseline_values: Dict[str, float] = {}
-        
-    # Hardware simulation for development (support both SIMULATION_MODE and simulation_mode)
-    self.simulation_mode = getattr(config, 'simulation_mode', getattr(config, 'SIMULATION_MODE', True))
-        
-    self.logger.info("Gas Monitor initialized")
+        self.alert_active: bool = False
+        self.baseline_values: Dict[str, float] = {}
+
+        # Hardware simulation for development (support both SIMULATION_MODE and simulation_mode)
+        self.simulation_mode: bool = getattr(config, 'simulation_mode', getattr(config, 'SIMULATION_MODE', True))
+
+        self.logger.info("Gas Monitor initialized")
     
     async def start_monitoring(self):
         """Start continuous gas monitoring"""

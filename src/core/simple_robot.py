@@ -40,20 +40,20 @@ class SimpleSarusRobot:
         self.config = config
         self.state = RobotState.INITIALIZING
         self.start_time = datetime.now()
-        
+
         # System status
         self.is_running = False
-        self.simulation_mode = getattr(config, 'simulation_mode', True)
-        
+        self.simulation_mode = getattr(config, 'simulation_mode', getattr(config, 'SIMULATION_MODE', True))
+
         # Simulated sensor values
         self.temperature = 22.5
         self.humidity = 45.0
-        self.gas_levels = {'mq2': 150, 'mq5': 120, 'mq7': 30}
-        
+        self.gas_levels = {'mq2': 150.0, 'mq5': 120.0, 'mq7': 30.0}
+
         # Voice interaction simulation
         self.last_command = None
         self.last_response = None
-        
+
         self.logger.info("Simplified Sarus Robot initialized")
     
     async def initialize(self):

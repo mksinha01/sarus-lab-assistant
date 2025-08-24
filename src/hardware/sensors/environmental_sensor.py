@@ -22,7 +22,7 @@ class EnvironmentalReading:
     humidity: float     # Percentage
     pressure: Optional[float] = None  # hPa
     air_quality: Optional[float] = None  # AQI
-    timestamp: datetime = None
+    timestamp: Optional[datetime] = None
     
     def __post_init__(self):
         if self.timestamp is None:
@@ -53,28 +53,30 @@ class EnvironmentalSensorManager:
         self.logger = logging.getLogger(__name__)
         self.config = config
         self.alert_callback = alert_callback
-        
+
         # Monitoring configuration
         self.thresholds = EnvironmentalThresholds()
         self.monitoring_interval = 10.0  # seconds
         self.is_monitoring = False
-        
+
         # Data storage
         self.current_reading: Optional[EnvironmentalReading] = None
         self.readings_history: List[EnvironmentalReading] = []
         self.max_history = 1000  # Keep last 1000 readings
-        
+
         # Alert state
         self.alert_cooldown = 300  # 5 minutes between same type alerts
         self.last_alerts: Dict[str, float] = {}
-        
+
         # Hardware simulation
-        self.simulation_mode = config.simulation_mode
-        
+        self.simulation_mode = getattr(config, 'simulation_mode', getattr(config, 'SIMULATION_MODE', True))
+
         # Data logging
-        self.log_file = Path(config.log_dir) / "environmental" / "sensor_data.jsonl"
+        # Resolve logs dir from config dataclass (LOGS_DIR) or attribute
+        logs_dir = getattr(config, 'LOGS_DIR', getattr(config, 'log_dir', Path(__file__).parent.parent.parent.parent / 'logs'))
+        self.log_file = Path(logs_dir) / "environmental" / "sensor_data.jsonl"
         self.log_file.parent.mkdir(parents=True, exist_ok=True)
-        
+
         self.logger.info("Environmental Sensor Manager initialized")
     
     async def start_monitoring(self):
@@ -299,8 +301,9 @@ class EnvironmentalSensorManager:
     async def _log_reading(self, reading: EnvironmentalReading):
         """Log environmental reading to file"""
         try:
+            ts = reading.timestamp or datetime.now()
             log_entry = {
-                'timestamp': reading.timestamp.isoformat(),
+                'timestamp': ts.isoformat(),
                 'temperature': reading.temperature,
                 'humidity': reading.humidity,
                 'pressure': reading.pressure,
@@ -320,7 +323,12 @@ class EnvironmentalSensorManager:
     def get_recent_readings(self, hours: int = 24) -> List[EnvironmentalReading]:
         """Get recent environmental readings"""
         cutoff_time = datetime.now() - timedelta(hours=hours)
-        return [r for r in self.readings_history if r.timestamp >= cutoff_time]
+        result: List[EnvironmentalReading] = []
+        for r in self.readings_history:
+            ts = r.timestamp or datetime.now()
+            if ts >= cutoff_time:
+                result.append(r)
+        return result
     
     def get_average_conditions(self, hours: int = 1) -> Optional[Dict[str, float]]:
         """Get average environmental conditions over time period"""
@@ -356,8 +364,9 @@ class EnvironmentalSensorManager:
         if not self.current_reading:
             return "Environmental monitoring active, no readings yet."
         
-        reading = self.current_reading
-        time_ago = (datetime.now() - reading.timestamp).total_seconds()
+    reading = self.current_reading
+    ts = reading.timestamp or datetime.now()
+    time_ago = (datetime.now() - ts).total_seconds()
         
         # Safety status
         if self.is_environment_safe():
