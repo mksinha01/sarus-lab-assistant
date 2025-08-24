@@ -363,17 +363,14 @@ class EnvironmentalSensorManager:
         """Get human-readable environmental status report"""
         if not self.current_reading:
             return "Environmental monitoring active, no readings yet."
-        
-    reading = self.current_reading
-    ts = reading.timestamp or datetime.now()
-    time_ago = (datetime.now() - ts).total_seconds()
-        
+
+        reading = self.current_reading
+        ts = reading.timestamp or datetime.now()
+        time_ago = (datetime.now() - ts).total_seconds()
+
         # Safety status
-        if self.is_environment_safe():
-            safety_status = "✅ SAFE"
-        else:
-            safety_status = "⚠️ WARNING"
-        
+        safety_status = "✅ SAFE" if self.is_environment_safe() else "⚠️ WARNING"
+
         return (
             f"{safety_status} - Temp: {reading.temperature:.1f}°C, "
             f"Humidity: {reading.humidity:.1f}% "
