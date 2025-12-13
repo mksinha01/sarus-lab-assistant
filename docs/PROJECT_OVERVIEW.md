@@ -45,6 +45,7 @@ sarus-robot/
    - Coordinates all subsystems
    - Manages robot state and lifecycle
    - Handles main operation loop
+   mkmk
 
 2. **AI Managers**
    - **SpeechManager**: Speech-to-text, text-to-speech, wake word detection
